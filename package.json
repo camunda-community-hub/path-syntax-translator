@@ -1,5 +1,6 @@
 {
 	"name": "path-syntax-translator",
+	"homepage": "https://camunda-community-hub.github.io/path-syntax-translator/",
 	"private": true,
 	"version": "0.0.0",
 	"type": "module",
