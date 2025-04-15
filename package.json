@@ -1,6 +1,6 @@
 {
 	"name": "path-syntax-translator",
-	"homepage": "https://camunda-consulting.github.io/path-syntax-translator/",
+	"homepage": "https://camunda-community-hub.github.io/path-syntax-translator/",
 	"private": true,
 	"version": "0.0.0",
 	"type": "module",
@@ -19,6 +19,7 @@
 		"diagram-js": "^14.5.4",
 		"react": "^18.3.1",
 		"react-dom": "^18.3.1",
+		"react-router-dom": "^7.5.0",
 		"uuid": "^11.0.3"
 	},
 	"devDependencies": {

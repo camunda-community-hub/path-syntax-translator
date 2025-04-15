@@ -2,14 +2,16 @@
 
 Created by: Till Stadtler
 
-This tool offers the possiblility to design BPMN process with keyboard only! Yeah! And you do not need to worry about the layout! Wuhuu!
+Test the BPMN Path Syntax Translator here: [BPMN Path Syntax Translator](https://camunda-community-hub.github.io/path-syntax-translator/)
+
+This tool offers the possiblility to design BPMN processes with keyboard only! Yeah! And you do not need to worry about the layout! Wuhuu!
 I created the BPMN Path Syntax based on the Sketch Miner Syntax, but I use different apporaches for fragments, gateway logic, and I extended it with a few features.
 
-This react app translates the BPMN Path Syntax into useful BPMN using bpmn.io libraries. The BPMN Path Syntax is a feature-complete syntax to describe the process part of an xml-based BPMN process model. The layout is done with a the bpmn-auto-layout library from bpmn.io.
+This react app translates the BPMN Path Syntax into useful BPMN, using bpmn.io libraries. The BPMN Path Syntax is a feature-complete syntax to describe the process part of an xml-based BPMN process model. The layout is done with a the bpmn-auto-layout library from bpmn.io.
 
 ## BPMN Path Syntax
 
-The BPMN Path Syntax uses one happy path and diverting fragments to describe a BPMN process. Roughly, each line represents one element. Sequence flows are added implicitely. This keeps the syntax short and easy to use. The syntax analyzes the position of a line in its context to induce if it is a start, intermediate or end event.
+The BPMN Path Syntax uses one happy path and diverting fragments to describe a BPMN process. Roughly speaking, each line represents one element. Sequence flows are added implicitely. This keeps the syntax short and easy to use. The syntax analyzes the position of a line in its context to induce if an event is a start, intermediate or end event.
 
 ### Defining elements
 
@@ -29,7 +31,7 @@ Elements are defined by various aspects:
     -   `id-...` - ids can be added if elements in the same scope share the same label, but you need to target a specific one
 -   a label: use `""` for the label
 
-To describe elements within a subprocess, indent each line when describing the elements of it.
+To describe elements within a subprocess, indent each line when describing the elements inside of it.
 
 ### Fragements
 
@@ -62,115 +64,70 @@ Sometimes, it is not possible to describe the gateway logic with just existing e
 Here are some examples for you to try (you must use tabs, so you have to replace the spaces manually, sorry):
 In this example, you can see that the layouter still needs some work!
 
-Without subprocesses:
+[Click here to access the example!](http://localhost:5174/path-syntax-translator?syntax=%28%22process+started%22%29%0A%5Bservice+%22do+something%22%5D%0A%5Bsend+%22notify+someone%22%5D%0ASkip+stuff%3F%0Ano%0A%28timer+%22wait+here+a+bit%22%29%0A%28MESSAGE+%22throw+this%22%29%0A%28message+%22receive+this%22%29%0A%28%22milestone+reached%22%29%0A%28MESSAGE+%22throw+and+end+this%22%29%0A%0A...%0ASkip+stuff%3F%0Ayes%0A%28%22milestone+reached%22%29%0A...%0A%0A...%0A%5Bservice+%22do+something%22%5D%0Aand+%5Buser+%22we+need+manual+intervention%22%5D%0A%3Csplit%3E%0A%0A%3Csplit%3E%0A%5Bsubprocess+%22a+subprocess%22%5D%0A%09%28start+%22this+is+extra+tricky%22%29%0A%09%28SIGNAL+%22do+you+receive+this%3F%22%29%0A%09%28signal+%22got+it+via+signal%22%29%0A%09%28finish+%22nice%21%22%29%0A%0A%09...%0A%09%28SIGNAL+%22do+you+receive+this%3F%22%29%0A%09%28message+%22got+it+via+message%22%29%0A%09%28finish+%22nice%21%22%29%0A%09...%0A%0A%09...%0A%09%28SIGNAL+%22do+you+receive+this%3F%22%29%0A%09%28timer+%22too+late%21%22%29%0A%09%28terminate+%22a+bummer%21%22%29%0A%5Bservice+%22some+more+stuff%22%5D%0A%28finish+%22we+are+done+here%21%29%0A%0A%3Csplit%3E%0Aand+%28timer+%22more+stuff+in+parallel%22%29%0A%28finish+%22good+thing+we+are+done+here+as+well%22%29%0A%0A%5Bevent+%22an+event-based+subprocess%22%5D%0A%09%28%28timer+%22every+few+minutes%22%29%29%0A%09%5Bsend+%22notify+user%22%5D%0A%09%28finish+%22all+done%22%29)
 
 ```
 ("process started")
 [service "do something"]
 [send "notify someone"]
+Skip stuff?
+no
 (timer "wait here a bit")
 (MESSAGE "throw this")
 (message "receive this")
 ("milestone reached")
-Does this work?
-yes
 (MESSAGE "throw and end this")
 
 ...
-(MESSAGE "throw this")
-(timer "not received on time")
-(ERROR "this did not work...")
+Skip stuff?
+yes
+("milestone reached")
+...
 
 ...
-Does this work?
-no
-[service "let's try something else"]
-<complex split>
-
-<complex split>
-Another gateway?
-Oh yes
-[user "work work"]
-<merge>
-
-<complex split>
-and [service "do this"]
-and <merge>
-
-<merge>
-("just end this")
-
-...
-Another gateway?
-Another yes
-(terminate "end all")
-```
-
-With subprocesses (manual replacement of spaces neccessary!):
-
-```
-("process started")
 [service "do something"]
-[send "notify someone"]
+and [user "we need manual intervention"]
+<split>
+
+<split>
 [subprocess "a subprocess"]
-	("subprocess started")
-	[user "manual work"]
-	("manual work completed")
-	("subprocess ended")
+	(start "this is extra tricky")
+	(SIGNAL "do you receive this?")
+	(signal "got it via signal")
+	(finish "nice!")
 
 	...
-	("subprocess started")
-	and [service "do something else on the side"]
-	and ("subprocess ended")
+	(SIGNAL "do you receive this?")
+	(message "got it via message")
+	(finish "nice!")
 	...
-(timer "wait here a bit")
-(MESSAGE "throw this")
-(message "receive this")
-("milestone reached")
-Does this work?
-yes
-(MESSAGE "throw and end this")
 
-...
-(MESSAGE "throw this")
-(timer "not received on time")
-(ERROR "this did not work...")
+	...
+	(SIGNAL "do you receive this?")
+	(timer "too late!")
+	(terminate "a bummer!")
+[service "some more stuff"]
+(finish "we are done here!)
 
-...
-Does this work?
-no
-[service "let's try something else"]
-<complex split>
+<split>
+and (timer "more stuff in parallel")
+(finish "good thing we are done here as well")
 
-<complex split>
-Another gateway?
-Oh yes
-[user "work work"]
-<merge>
-
-<complex split>
-and [service "do this"]
-and <merge>
-
-<merge>
-("just end this")
-
-...
-Another gateway?
-Another yes
-(terminate "end all")
-
-[event "this is always collapsed..."]
-	((timer "every 5 minutes))
-	[send "send stuff"]
-	("stuff sent")
+[event "an event-based subprocess"]
+	((timer "every few minutes"))
+	[send "notify user"]
+	(finish "all done")
 ```
 
 ## Limitations and Bugs
 
 There are some issues with using complex gateway logic and knots.
 
+The bpmn-auto-layout library cannot handle associations, so compensations do not work. It also cannot handle pools and lanes. Currently, the translator itself also does not output pools and lanes as part of the process description of the BPMN process. All subprocesses are collapsed.
+
 ## Further Development
 
-No plans yet. Depends on user feedback!
--> till.stadtler@camunda.com
+-   Contribute to bpmn-auto-layout to unblock the limitations
+-   Add meta layout data: which processes are collapsed/expanded, which elements should be vertically aligned,...
+-   More detailed read.me
+-   Editor support (switch lines easily, auto suggestions,...)

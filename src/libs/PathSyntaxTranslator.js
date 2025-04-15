@@ -321,6 +321,7 @@ export default async function generateXML(syntax) {
 		}
 
 		if (isLineFragmentBorder(prevPrevLine)) {
+			console.log("yes");
 			// if (
 			//   isBPMNElementOfType(prevElement.outgoing[0]?.targetRef, "ParallelGateway") ||
 			//   isBPMNElementOfType(prevElement.outgoing[0]?.targetRef, "EventBasedGateway")
@@ -374,9 +375,6 @@ export default async function generateXML(syntax) {
 						"ParallelGateway"
 					)) ||
 				(!hasLineGatewayType(currentLine, "parallel") &&
-					isBPMNElementSuitableForEventBasedGateway(
-						previousExistingNextElement
-					) &&
 					isElementSuitableForEventBasedGateway(currentLine) &&
 					isBPMNElementOfType(
 						previousExistingNextElement,
@@ -384,6 +382,8 @@ export default async function generateXML(syntax) {
 					))
 			) {
 				prevElement = prevElement.outgoing[0]?.targetRef;
+				console.log("I'm here");
+				console.log(prevElement);
 			}
 		}
 
